@@ -135,6 +135,26 @@ class CustomerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Customer customer = ModalRoute.of(context).settings.arguments;
 
+    Widget dateReturned;
+
+    if (customer.dateReturned != '') {
+      dateReturned = Text(
+        convertDateFromString(customer.dateReturned),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      );
+    } else {
+      dateReturned = Text(
+        'Not yet returned',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      );
+    }
+
     // Use the Customer to create the UI.
     return Scaffold(
       appBar: AppBar(
@@ -259,7 +279,7 @@ class CustomerScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Payment status',
+                        'Payment',
                         style: TextStyle(
                           color: Colors.grey[500],
                         ),
@@ -314,13 +334,7 @@ class CustomerScreen extends StatelessWidget {
                       /*2*/
                       Container(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: Text(
-                          '',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
+                        child: dateReturned
                       ),
                       Text(
                         'Date laundry returned to customer',
