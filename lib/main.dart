@@ -60,6 +60,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: appTitle,
+      theme: ThemeData(
+        primaryColor: Colors.teal,
+      ),
       home: MyHomePage(title: appTitle),
     );
   }
