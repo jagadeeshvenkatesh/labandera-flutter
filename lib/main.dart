@@ -191,13 +191,6 @@ class CustomerScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
                 Expanded(
                   /*1*/
                   child: Column(
@@ -239,6 +232,31 @@ class CustomerScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
+                          '123',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Weight/ Items',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  /*1*/
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /*2*/
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
                           customer.price,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -254,15 +272,7 @@ class CustomerScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Expanded(
+                ),Expanded(
                   /*1*/
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
