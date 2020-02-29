@@ -84,10 +84,46 @@ class PhotosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(25.0),
       itemCount: photos.length,
-      itemBuilder: (context, index) {
-        return Text(photos[index].name);
+      itemBuilder: (context, int index) {
+
+        if (index == 0) {
+          // return the header
+          return new Row(
+              children: <Widget>[
+                new Expanded(
+                    child: new Text(
+                      'Customer',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                ),
+                new Expanded(
+                    child: new Text(
+                      'Status',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                      ),
+                    )
+                ),
+              ]
+          );
+        }
+        index -= 1;
+        return new Container(
+          //TODO Add row coloring - color: Colors.red,
+          child: Row(
+            children: <Widget>[
+              new Expanded(child: new Text(photos[index].name)),
+              new Expanded(child: new Text(photos[index].status)),
+            ],
+
+          )
+        );
       },
       separatorBuilder: (context, index) {
         return Divider();
