@@ -5,31 +5,29 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<Photo>> fetchPhotos(http.Client client) async {
+Future<List<Customer>> fetchCustomers(http.Client client) async {
   final response =
   await client.get('https://my-json-server.typicode.com/sudoist/labandera-my-json/customer');
 
-  // Use the compute function to run parsePhotos in a separate isolate.
-  return compute(parsePhotos, response.body);
+  // Use the compute function to run parseCustomers in a separate isolate.
+  return compute(parseCustomers, response.body);
 }
 
-// A function that converts a response body into a List<Photo>.
-List<Photo> parsePhotos(String responseBody) {
+// A function that converts a response body into a List<Customer>.
+List<Customer> parseCustomers(String responseBody) {
   final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
 
-  return parsed.map<Photo>((json) => Photo.fromJson(json)).toList();
+  return parsed.map<Customer>((json) => Customer.fromJson(json)).toList();
 }
 
-class Photo {
-  final int albumId;
+class Customer {
   final int id;
   final String name;
   final String status;
-  Photo({this.albumId, this.id, this.name, this.status});
+  Customer({this.id, this.name, this.status});
 
-  factory Photo.fromJson(Map<String, dynamic> json) {
-    return Photo(
-      albumId: json['albumId'] as int,
+  factory Customer.fromJson(Map<String, dynamic> json) {
+    return Customer(
       id: json['id'] as int,
       name: json['name'] as String,
       status: json['status'] as String,
@@ -62,13 +60,13 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: FutureBuilder<List<Photo>>(
-        future: fetchPhotos(http.Client()),
+      body: FutureBuilder<List<Customer>>(
+        future: fetchCustomers(http.Client()),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
           return snapshot.hasData
-              ? PhotosList(photos: snapshot.data)
+              ? CustomersList(customers: snapshot.data)
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -76,16 +74,16 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class PhotosList extends StatelessWidget {
-  final List<Photo> photos;
+class CustomersList extends StatelessWidget {
+  final List<Customer> customers;
 
-  PhotosList({Key key, this.photos}) : super(key: key);
+  CustomersList({Key key, this.customers}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.all(25.0),
-      itemCount: photos.length,
+      itemCount: customers.length,
       itemBuilder: (context, int index) {
 
         if (index == 0) {
@@ -118,8 +116,8 @@ class PhotosList extends StatelessWidget {
           //TODO Add row coloring - color: Colors.red,
           child: Row(
             children: <Widget>[
-              new Expanded(child: new Text(photos[index].name)),
-              new Expanded(child: new Text(photos[index].status)),
+              new Expanded(child: new Text(customers[index].name)),
+              new Expanded(child: new Text(customers[index].status)),
             ],
 
           )
