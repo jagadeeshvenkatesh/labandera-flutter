@@ -166,7 +166,7 @@ class CustomerScreen extends StatelessWidget {
       body: ListView(
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
             child: Row(
               children: [
                 Expanded(
@@ -176,7 +176,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           customer.name,
                           style: TextStyle(
@@ -194,6 +193,13 @@ class CustomerScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
                 Expanded(
                   /*1*/
                   child: Column(
@@ -201,7 +207,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           customer.status,
                           style: TextStyle(
@@ -223,7 +228,7 @@ class CustomerScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
@@ -233,7 +238,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           '123',
                           style: TextStyle(
@@ -258,7 +262,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           customer.price,
                           style: TextStyle(
@@ -282,7 +285,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           customer.isPaid,
                           style: TextStyle(
@@ -304,7 +306,7 @@ class CustomerScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
@@ -314,7 +316,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           convertDateFromString(customer.dateReceived),
                           style: TextStyle(
@@ -336,7 +337,7 @@ class CustomerScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
@@ -346,7 +347,6 @@ class CustomerScreen extends StatelessWidget {
                     children: [
                       /*2*/
                       Container(
-                        padding: const EdgeInsets.only(bottom: 12),
                         child: dateReturned
                       ),
                       Text(
@@ -357,6 +357,109 @@ class CustomerScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 0, top: 0),
+            child: Row(
+              children: [
+                Expanded(
+                  /*1*/
+                  child: FlatButton(
+                    color: Colors.blueGrey,
+                    textColor: Colors.white,
+                    disabledColor: Colors.grey,
+                    disabledTextColor: Colors.black,
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      /*...*/
+                    },
+                    child: Text(
+                      "Queued",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 0),
+            child: Row(
+              children: [
+                Expanded(
+                  /*1*/
+                  child: FlatButton(
+                    color: Colors.teal,
+                    textColor: Colors.white,
+                    disabledColor: Colors.grey,
+                    disabledTextColor: Colors.black,
+//                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      /*...*/
+                    },
+                    child: Text(
+                      "Washing in progress",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 0),
+            child: Row(
+              children: [
+                Expanded(
+                  /*1*/
+                  child: FlatButton(
+                    color: Colors.blue,
+                    textColor: Colors.white,
+                    disabledColor: Colors.grey,
+                    disabledTextColor: Colors.black,
+//                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      /*...*/
+                    },
+                    child: Text(
+                      "Ready for Pickup/Delivery",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(top: 1.0),
+            child: Row(
+              children: [
+                Expanded(
+                  /*1*/
+                  child: FlatButton(
+                    color: Colors.green,
+                    textColor: Colors.white,
+                    disabledColor: Colors.grey,
+                    disabledTextColor: Colors.black,
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      /*...*/
+                    },
+                    child: Text(
+                      "Order Complete",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  )
                 ),
               ],
             ),
