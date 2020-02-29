@@ -1,16 +1,23 @@
-# labandera
+# Labandera
 
-A new Flutter application.
+A mobile app for laundry shops that will be able to track if clothes are ready for pickup/delivery.
 
-## Getting Started
+## Learning Flutter
 
-This project is a starting point for a Flutter application.
+This will help me learn mobile development with Flutter using Lumen for API.
 
-A few resources to get you started if this is your first Flutter project:
+Can be updated in the future as a base to learn React, VueJs and others as well.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## API
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Temporary API with https://my-json-server.typicode.com/
+
+### Test data for app
+
+#### Repo
+
+https://github.com/sudoist/labandera-my-json/blob/master/db.json
+
+#### Endpoint
+
+https://my-json-server.typicode.com/sudoist/labandera-my-json/customer
