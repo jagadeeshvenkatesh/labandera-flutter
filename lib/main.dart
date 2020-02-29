@@ -81,51 +81,54 @@ class CustomersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(25.0),
-      itemCount: customers.length,
-      itemBuilder: (context, int index) {
-
-        if (index == 0) {
-          // return the header
-          return new Row(
-              children: <Widget>[
-                new Expanded(
-                    child: new Text(
-                      'Customer',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold
-                      ),
-                    )
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Customers'),
+      ),
+      body: ListView.builder(
+        itemCount: customers.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(customers[index].name),
+            subtitle: Text('Status: ' + customers[index].status),
+            // When a user taps the ListTile, navigate to the DetailScreen.
+            // Notice that you're not only creating a DetailScreen, you're
+            // also passing the current customer through to it.
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CustomerScreen(),
+                  // Pass the arguments as part of the RouteSettings. The
+                  // DetailScreen reads the arguments from these settings.
+                  settings: RouteSettings(
+                    arguments: customers[index],
+                  ),
                 ),
-                new Expanded(
-                    child: new Text(
-                      'Status',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                ),
-              ]
+              );
+            },
           );
-        }
-        index -= 1;
-        return new Container(
-          //TODO Add row coloring - color: Colors.red,
-          child: Row(
-            children: <Widget>[
-              new Expanded(child: new Text(customers[index].name)),
-              new Expanded(child: new Text(customers[index].status)),
-            ],
-
-          )
-        );
-      },
-      separatorBuilder: (context, index) {
-        return Divider();
-      },
+        },
+      ),
     );
   }
 }
+
+class CustomerScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Customer customer = ModalRoute.of(context).settings.arguments;
+
+    // Use the Customer to create the UI.
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(customer.name),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(customer.status),
+      ),
+    );
+  }
+}
+
