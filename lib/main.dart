@@ -7,10 +7,28 @@ import 'package:date_format/date_format.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:http/http.dart' as http;
 
+Future<Customer> updateCustomer(String status, String isPaid) async {
+  final http.Response response = await http.post(
+    'https://jsonplaceholder.typicode.com/albums',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'status': status,
+      'isPaid': isPaid,
+    }),
+  );
+  if (response.statusCode == 201) {
+    // If the server did return a 201 CREATED response, then parse the JSON.
+    return Customer.fromJson(json.decode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response, then throw an exception.
+    throw Exception('Failed to load customer');
+  }
+}
+
 String convertDateFromString(String strDate){
   DateTime todayDate = DateTime.parse(strDate);
-  print(todayDate);
-  print(formatDate(todayDate, [MM, ' ', dd, ', ', yyyy]));
   return formatDate(todayDate, [MM, ' ', dd, ', ', yyyy]);
 }
 
@@ -144,6 +162,8 @@ class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
   String _myPayment;
   String _myActivityResult;
   final formKey = new GlobalKey<FormState>();
+
+  Future<Customer> _futureCustomer;
 
   _saveForm() {
     var form = formKey.currentState;
@@ -283,23 +303,13 @@ class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
                 child: Row(
                   children: [
                     Expanded(
-                      /*1*/
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /*2*/
                           Container(
                             child: Text(
                               convertDateFromString(customer.dateReceived),
@@ -379,13 +389,17 @@ class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
                       "display": "Order Complete",
                       "value": "Order Complete",
                     },
+                    {
+                      "display": "Cancelled",
+                      "value": "Cancelled",
+                    },
                   ],
                   textField: 'display',
                   valueField: 'value',
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
+                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
                 child: DropDownFormField(
                   titleText: 'Payment status',
                   hintText: customer.isPaid,
@@ -415,16 +429,37 @@ class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(8),
-                child: RaisedButton(
-                  child: Text('Update'),
-                  onPressed: _saveForm,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8.0),
+                child: (_futureCustomer == null)
+                    ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      child: Text('Create Data'),
+                      onPressed: () {
+                        setState(() {
+                          _futureCustomer = updateCustomer(_myActivity, _myPayment);
+                        });
+                      },
+                    ),
+                  ],
+                )
+                    : FutureBuilder<Customer>(
+                  future: _futureCustomer,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      print(snapshot);
+                      return Text('TODO fix submit later');
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+
+                    return CircularProgressIndicator();
+                  },
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Text(_myActivityResult),
-              )
+
             ],
           ),
         ),
