@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:http/http.dart' as http;
 
 String convertDateFromString(String strDate){
@@ -117,7 +118,7 @@ class CustomersList extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CustomerScreen(),
+                  builder: (context) => CustomerScreenDropDown(),
                   // Pass the arguments as part of the RouteSettings. The
                   // DetailScreen reads the arguments from these settings.
                   settings: RouteSettings(
@@ -133,10 +134,38 @@ class CustomersList extends StatelessWidget {
   }
 }
 
-class CustomerScreen extends StatelessWidget {
+class CustomerScreenDropDown extends StatefulWidget {
+  @override
+  _CustomerScreenDropDownState createState() => _CustomerScreenDropDownState();
+}
+
+class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
+  String _myActivity;
+  String _myPayment;
+  String _myActivityResult;
+  final formKey = new GlobalKey<FormState>();
+
+  _saveForm() {
+    var form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      setState(() {
+        _myActivityResult = _myActivity + ' ' + _myPayment;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Customer customer = ModalRoute.of(context).settings.arguments;
+
+    @override
+    void initState() {
+      super.initState();
+      _myActivity = customer.status;
+      _myPayment = customer.isPaid;
+      _myActivityResult = '';
+    }
 
     Widget dateReturned;
 
@@ -157,316 +186,249 @@ class CustomerScreen extends StatelessWidget {
         ),
       );
     }
-
-    // Use the Customer to create the UI.
     return Scaffold(
       appBar: AppBar(
         title: Text('Labada Info'),
       ),
-      body: ListView(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          customer.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
+      body: Center(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      /*1*/
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /*2*/
+                          Container(
+                            child: Text(
+                              customer.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Text(
-                        'Customer',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          customer.status,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
+                          Text(
+                            'Customer',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      Text(
-                        'Status',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          '123',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Weight/ Items',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          customer.price,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Price',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          customer.isPaid,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Payment',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: Text(
-                          convertDateFromString(customer.dateReceived),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Date laundry received from customer',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*2*/
-                      Container(
-                        child: dateReturned
-                      ),
-                      Text(
-                        'Date laundry returned to customer',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 0, top: 0),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: FlatButton(
-                    color: Colors.blueGrey,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-                    splashColor: Colors.blueAccent,
-                    onPressed: () {
-                      /*...*/
-                    },
-                    child: Text(
-                      "Queued",
-                      style: TextStyle(fontSize: 20.0),
                     ),
-                  )
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 0),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: FlatButton(
-                    color: Colors.teal,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-//                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.blueAccent,
-                    onPressed: () {
-                      /*...*/
-                    },
-                    child: Text(
-                      "Washing in progress",
-                      style: TextStyle(fontSize: 20.0),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      /*1*/
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /*2*/
+                          Container(
+                            child: Text(
+                              '123',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Weight/ Items',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
+                    Expanded(
+                      /*1*/
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /*2*/
+                          Container(
+                            child: Text(
+                              customer.price,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Price',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 0),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: FlatButton(
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-//                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.blueAccent,
-                    onPressed: () {
-                      /*...*/
-                    },
-                    child: Text(
-                      "Ready for Pickup/Delivery",
-                      style: TextStyle(fontSize: 20.0),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      /*1*/
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /*2*/
+                          Container(
+                            child: Text(
+                              convertDateFromString(customer.dateReceived),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Date laundry received from customer',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(top: 1.0),
-            child: Row(
-              children: [
-                Expanded(
-                  /*1*/
-                  child: FlatButton(
-                    color: Colors.green,
-                    textColor: Colors.white,
-                    disabledColor: Colors.grey,
-                    disabledTextColor: Colors.black,
-                    padding: EdgeInsets.all(8.0),
-                    splashColor: Colors.blueAccent,
-                    onPressed: () {
-                      /*...*/
-                    },
-                    child: Text(
-                      "Order Complete",
-                      style: TextStyle(fontSize: 20.0),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      /*1*/
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /*2*/
+                          Container(
+                              child: dateReturned
+                          ),
+                          Text(
+                            'Date laundry returned to customer',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: DropDownFormField(
+                  titleText: 'Order status',
+                  hintText: customer.status,
+                  value: _myActivity,
+                  onSaved: (value) {
+                    setState(() {
+                      _myActivity = value;
+                    });
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      _myActivity = value;
+                    });
+                  },
+                  dataSource: [
+                    {
+                      "display": "Queued",
+                      "value": "Queued",
+                    },
+                    {
+                      "display": "Washing in progress",
+                      "value": "Washing in progress",
+                    },
+                    {
+                      "display": "Ready for Pickup/Delivery",
+                      "value": "Ready for Pickup/Delivery",
+                    },
+                    {
+                      "display": "Order Complete",
+                      "value": "Order Complete",
+                    },
+                  ],
+                  textField: 'display',
+                  valueField: 'value',
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: DropDownFormField(
+                  titleText: 'Payment status',
+                  hintText: customer.isPaid,
+                  value: _myPayment,
+                  onSaved: (value) {
+                    setState(() {
+                      _myPayment = value;
+                    });
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      _myPayment = value;
+                    });
+                  },
+                  dataSource: [
+                    {
+                      "display": "Pending",
+                      "value": "Pending",
+                    },
+                    {
+                      "display": "Paid",
+                      "value": "Paid",
+                    },
+                  ],
+                  textField: 'display',
+                  valueField: 'value',
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(8),
+                child: RaisedButton(
+                  child: Text('Update'),
+                  onPressed: _saveForm,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Text(_myActivityResult),
+              )
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
-

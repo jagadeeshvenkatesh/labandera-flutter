@@ -30,6 +30,8 @@ dependencies:
 
   date_format: ^1.0.8
 
+  dropdown_formfield: ^0.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
