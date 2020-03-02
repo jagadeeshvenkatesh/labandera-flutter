@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
@@ -82,7 +84,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.teal,
       ),
-      home: MyHomePage(title: appTitle),
+      home: TestPage(),
+//      home: MyHomePage(title: appTitle),
     );
   }
 }
@@ -465,5 +468,50 @@ class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
         ),
       ),
     );
+  }
+}
+
+class TestPage extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<TestPage> {
+  String barcode = '';
+  Uint8List bytes = Uint8List(200);
+
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Labada Scan Order QR'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: Image.memory(bytes),
+              ),
+              RaisedButton(onPressed: _scan, child: Text("Scan QR")),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future _scan() async {
+    String barcode = await scanner.scan();
+    setState(() => this.barcode = barcode);
   }
 }
