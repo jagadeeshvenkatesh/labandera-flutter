@@ -9,9 +9,22 @@ import 'package:date_format/date_format.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:http/http.dart' as http;
 
+Future<Customer> fetchCustomer(String id) async {
+  final response =
+  await http.get('https://my-json-server.typicode.com/sudoist/labandera-my-json/customer/$id');
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response, then parse the JSON.
+    return Customer.fromJson(json.decode(response.body));
+  } else {
+    // If the server did not return a 200 OK response, then throw an exception.
+    throw Exception('Failed to load customer');
+  }
+}
+
 Future<Customer> updateCustomer(String status, String isPaid) async {
   final http.Response response = await http.post(
-    'https://jsonplaceholder.typicode.com/albums',
+    'https://jsonplaceholder.typicode.com/customers',
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -480,13 +493,24 @@ class _MyAppState extends State<TestPage> {
   String barcode = '';
   Uint8List bytes = Uint8List(200);
 
+  Future<Customer> futureCustomer;
+
   @override
-  initState() {
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+
+
+    if (barcode != null) {
+      print('---------------------------------------');
+      print(barcode + ' scanned value');
+      print('---------------------------------------');
+
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -494,7 +518,7 @@ class _MyAppState extends State<TestPage> {
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
@@ -502,6 +526,55 @@ class _MyAppState extends State<TestPage> {
                 height: 200,
                 child: Image.memory(bytes),
               ),
+              (futureCustomer == null)
+                  ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    child: Text('Check records for file'),
+                    onPressed: () {
+                      setState(() {
+//                        _futureCustomer = updateCustomer(_myActivity, _myPayment);
+
+                        futureCustomer = fetchCustomer('2');
+                      });
+                    },
+                  ),
+                ],
+              )
+                  : FutureBuilder<Customer>(
+                future: futureCustomer,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+//                    print(snapshot);
+                    return ListTile(
+                      title: Text(snapshot.data.name),
+                      subtitle: Text('Status: ' + snapshot.data.status),
+                      // When a user taps the ListTile, navigate to the DetailScreen.
+                      // Notice that you're not only creating a DetailScreen, you're
+                      // also passing the current customer through to it.
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CustomerScreenDropDown(),
+                            // Pass the arguments as part of the RouteSettings. The
+                            // DetailScreen reads the arguments from these settings.
+                            settings: RouteSettings(
+                              arguments: snapshot.data,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+
+                  return CircularProgressIndicator();
+                },
+              ),
+              Text('RESULT  $barcode'),
               RaisedButton(onPressed: _scan, child: Text("Scan QR")),
             ],
           ),
