@@ -503,50 +503,32 @@ class _MyAppState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
 
-
-
     if (barcode != null) {
-      print('---------------------------------------');
-      print(barcode + ' scanned value');
-      print('---------------------------------------');
-
+      futureCustomer = fetchCustomer(barcode);
     }
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('Labada Scan Order QR'),
         ),
         body: Center(
+
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 width: 200,
-                height: 200,
+                height: 20,
                 child: Image.memory(bytes),
               ),
               (futureCustomer == null)
-                  ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    child: Text('Check records for file'),
-                    onPressed: () {
-                      setState(() {
-//                        _futureCustomer = updateCustomer(_myActivity, _myPayment);
-
-                        futureCustomer = fetchCustomer('2');
-                      });
-                    },
-                  ),
-                ],
-              )
+                  ? ''
                   : FutureBuilder<Customer>(
                 future: futureCustomer,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-//                    print(snapshot);
                     return ListTile(
                       title: Text(snapshot.data.name),
                       subtitle: Text('Status: ' + snapshot.data.status),
@@ -574,7 +556,11 @@ class _MyAppState extends State<TestPage> {
                   return CircularProgressIndicator();
                 },
               ),
-              Text('RESULT  $barcode'),
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: Image.memory(bytes),
+              ),
               RaisedButton(onPressed: _scan, child: Text("Scan QR")),
             ],
           ),
