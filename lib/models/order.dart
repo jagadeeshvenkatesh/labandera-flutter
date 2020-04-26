@@ -336,7 +336,7 @@ class _OrderScreenDropDownState extends State<OrderScreenDropDown> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           RaisedButton(
-                            child: Text('Create Data'),
+                            child: Text('Update Order'),
                             onPressed: () {
                               setState(() {
                                 _futureOrder =
