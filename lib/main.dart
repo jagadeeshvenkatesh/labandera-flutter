@@ -6,9 +6,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final appTitle = 'Labandera Laundry App';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Labada App',
+      title: appTitle,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -21,13 +23,15 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: MyHomePage(title: appTitle),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
+  final String title;
+
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -82,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Labada Laundry App'),
+          title: Text(widget.title),
         ),
         body: SingleChildScrollView(
           child: Center(
