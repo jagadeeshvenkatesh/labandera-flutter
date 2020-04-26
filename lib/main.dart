@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert' show json, base64, ascii;
+import 'dart:convert';
+
+import './models/order.dart';
 
 const String apiBase = 'https://api.labada.tigasoft.dev/api';
 final storage = FlutterSecureStorage();
@@ -197,19 +199,16 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
     Scaffold(
-      appBar: AppBar(title: Text(payload['token'])),
-      body: Center(
-        child: FutureBuilder(
-          future: http.read('$apiBase/orders', headers: {"x-access-token": payload['token']}),
-          builder: (context, snapshot) =>
-            snapshot.hasData ?
-            Column(children: <Widget>[
-              Text("${payload['auth']}, here's the data:"),
-              Text(snapshot.data, style: Theme.of(context).textTheme.display1)
-            ],)
-            :
-            snapshot.hasError ? Text("An error occurred") : CircularProgressIndicator()
-        ),
+      // appBar: AppBar(title: Text(payload['token'])),
+      body: FutureBuilder<List<Order>>(
+        future: fetchOrders(http.Client(), payload['token']),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+
+          return snapshot.hasData
+              ? OrderList(orders: snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
       ),
     );
 }
