@@ -1,86 +1,23 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:qrscan/qrscan.dart' as scanner;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:date_format/date_format.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
 
-Future<Customer> fetchCustomer(String id) async {
-  final response =
-  await http.get('https://my-json-server.typicode.com/sudoist/labandera-my-json/customer/$id');
+import './models/order.dart';
 
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response, then parse the JSON.
-    return Customer.fromJson(json.decode(response.body));
-  } else {
-    // If the server did not return a 200 OK response, then throw an exception.
-    throw Exception('Failed to load customer');
-  }
-}
+const String apiBase = 'https://api.labada.tigasoft.dev/api';
+final storage = FlutterSecureStorage();
 
-Future<Customer> updateCustomer(String status, String isPaid) async {
-  final http.Response response = await http.post(
-    'https://jsonplaceholder.typicode.com/customers',
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'status': status,
-      'isPaid': isPaid,
-    }),
-  );
-  if (response.statusCode == 201) {
-    // If the server did return a 201 CREATED response, then parse the JSON.
-    return Customer.fromJson(json.decode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response, then throw an exception.
-    throw Exception('Failed to load customer');
-  }
-}
-
-String convertDateFromString(String strDate){
-  DateTime todayDate = DateTime.parse(strDate);
-  return formatDate(todayDate, [MM, ' ', dd, ', ', yyyy]);
-}
-
-Future<List<Customer>> fetchCustomers(http.Client client) async {
-  final response =
-  await client.get('https://my-json-server.typicode.com/sudoist/labandera-my-json/customer');
-
-  // Use the compute function to run parseCustomers in a separate isolate.
-  return compute(parseCustomers, response.body);
-}
-
-// A function that converts a response body into a List<Customer>.
-List<Customer> parseCustomers(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Customer>((json) => Customer.fromJson(json)).toList();
-}
-
-class Customer {
-  final int id;
-  final String name;
-  final String status;
-  final String price;
-  final String isPaid;
-  final String dateReceived;
-  final String dateReturned;
-  Customer({this.id, this.name, this.status, this.price, this.isPaid, this.dateReceived, this.dateReturned});
-
-  factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      status: json['status'] as String,
-      price: json['price'] as String,
-      isPaid: json['isPaid'] as String,
-      dateReceived: json['dateReceived'] as String,
-      dateReturned: json['dateReturned'] as String,
+class LogoutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("Logout Page"),
+      ),
+      body: new Center(
+        child: new Text('You have been logged out'),
+      ),
     );
   }
 }
@@ -88,489 +25,207 @@ class Customer {
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  Future<String> get jwtOrEmpty async {
+    var jwt = await storage.read(key: "auth");
+    if(jwt == null) return "";
+    return jwt;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Labandera Laundry App';
+    final appTitle = 'Labandera Laundry Shop';
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: appTitle,
       theme: ThemeData(
-        primaryColor: Colors.teal,
+        // This is the theme of your application.
+        //
+        // Try running your application with 'flutter run'. You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // 'hot reload' (press 'r' in the console where you ran 'flutter run',
+        // or simply save your changes to 'hot reload' in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.teal,
       ),
-      home: TestPage(),
-//      home: MyHomePage(title: appTitle),
+      home: LoginPage(title: appTitle),
+      routes: {
+        "/logout": (_) => new LogoutPage(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   final String title;
 
-  MyHomePage({Key key, this.title}) : super(key: key);
+  LoginPage({Key key, this.title}) : super(key: key);
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void displayDialog(context, title, text) => showDialog(
+      context: context,
+      builder: (context) =>
+        AlertDialog(
+          title: Text(title),
+          content: Text(text)
+        ),
+    );
+
+  Future<String> attemptLogIn(String email, String password) async {
+    print('$apiBase/auth/login');
+    var res = await http.post(
+      '$apiBase/auth/login',
+      body: {
+        'email': email,
+        'password': password
+      }
+    );
+    if(res.statusCode == 200) return res.body;
+    return null;
+  }
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+
+    final emailField = TextField(
+      obscureText: false,
+      style: style,
+      controller: widget._emailController,
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: 'Email',
+          border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+    );
+
+    final passwordField = TextField(
+      obscureText: true,
+      style: style,
+      controller: widget._passwordController,
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: 'Password',
+          border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+    );
+
+    final loginButon = Material(
+      elevation: 5.0,
+      borderRadius: BorderRadius.circular(30.0),
+      color: Colors.teal,
+      child: MaterialButton(
+        minWidth: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+        onPressed: () async {
+                var email = widget._emailController.text;
+                var password = widget._passwordController.text;
+                var auth = {};
+                var jwt = await widget.attemptLogIn(email, password);
+                if(jwt != null) {
+                  auth = json.decode(jwt);
+                  storage.write(key: "jwt", value: auth['token']);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage.fromBase64(jwt)
+                    )
+                  );
+                } else {
+                  widget.displayDialog(context, "An Error Occurred", "No account was found matching that email and password");
+                }
+              },
+        child: Text('Login',
+            textAlign: TextAlign.center,
+            style: style.copyWith(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
-      body: FutureBuilder<List<Customer>>(
-        future: fetchCustomers(http.Client()),
+    );
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 155.0,
+                      child: Image.asset(
+                        'assets/logo.jpg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(height: 45.0),
+                    emailField,
+                    SizedBox(height: 25.0),
+                    passwordField,
+                    SizedBox(
+                      height: 35.0,
+                    ),
+                    loginButon,
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        )
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  HomePage(this.jwt, this.payload);
+  
+  factory HomePage.fromBase64(String jwt) =>
+    HomePage(
+      jwt,
+      json.decode(jwt)
+    );
+
+  final String jwt;
+  final Map<String, dynamic> payload;
+
+  @override
+  Widget build(BuildContext context) =>
+    Scaffold(
+      // appBar: AppBar(title: Text(payload['token'])),
+      body: FutureBuilder<List<Order>>(
+        future: fetchOrders(http.Client(), payload['token']),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
           return snapshot.hasData
-              ? CustomersList(customers: snapshot.data)
+              ? OrderList(orders: snapshot.data)
               : Center(child: CircularProgressIndicator());
         },
       ),
     );
-  }
-}
-
-class CustomersList extends StatelessWidget {
-  final List<Customer> customers;
-
-  CustomersList({Key key, this.customers}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Customers'),
-      ),
-      body: ListView.builder(
-        itemCount: customers.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(customers[index].name),
-            subtitle: Text('Status: ' + customers[index].status),
-            // When a user taps the ListTile, navigate to the DetailScreen.
-            // Notice that you're not only creating a DetailScreen, you're
-            // also passing the current customer through to it.
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CustomerScreenDropDown(),
-                  // Pass the arguments as part of the RouteSettings. The
-                  // DetailScreen reads the arguments from these settings.
-                  settings: RouteSettings(
-                    arguments: customers[index],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
-
-class CustomerScreenDropDown extends StatefulWidget {
-  @override
-  _CustomerScreenDropDownState createState() => _CustomerScreenDropDownState();
-}
-
-class _CustomerScreenDropDownState extends State<CustomerScreenDropDown> {
-  String _myActivity;
-  String _myPayment;
-  String _myActivityResult;
-  final formKey = new GlobalKey<FormState>();
-
-  Future<Customer> _futureCustomer;
-
-  _saveForm() {
-    var form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      setState(() {
-        _myActivityResult = _myActivity + ' ' + _myPayment;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final Customer customer = ModalRoute.of(context).settings.arguments;
-
-    @override
-    void initState() {
-      super.initState();
-      _myActivity = customer.status;
-      _myPayment = customer.isPaid;
-      _myActivityResult = '';
-    }
-
-    Widget dateReturned;
-
-    if (customer.dateReturned != '') {
-      dateReturned = Text(
-        convertDateFromString(customer.dateReturned),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-      );
-    } else {
-      dateReturned = Text(
-        'Not yet returned',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-      );
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Labada Info'),
-      ),
-      body: Center(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              customer.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Customer',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              '123',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Weight/ Items',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              customer.price,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Price',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: Text(
-                              convertDateFromString(customer.dateReceived),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Date laundry received from customer',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                              child: dateReturned
-                          ),
-                          Text(
-                            'Date laundry returned to customer',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: DropDownFormField(
-                  titleText: 'Order status',
-                  hintText: customer.status,
-                  value: _myActivity,
-                  onSaved: (value) {
-                    setState(() {
-                      _myActivity = value;
-                    });
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _myActivity = value;
-                    });
-                  },
-                  dataSource: [
-                    {
-                      "display": "Queued",
-                      "value": "Queued",
-                    },
-                    {
-                      "display": "Washing in progress",
-                      "value": "Washing in progress",
-                    },
-                    {
-                      "display": "Ready for Pickup/Delivery",
-                      "value": "Ready for Pickup/Delivery",
-                    },
-                    {
-                      "display": "Order Complete",
-                      "value": "Order Complete",
-                    },
-                    {
-                      "display": "Cancelled",
-                      "value": "Cancelled",
-                    },
-                  ],
-                  textField: 'display',
-                  valueField: 'value',
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: DropDownFormField(
-                  titleText: 'Payment status',
-                  hintText: customer.isPaid,
-                  value: _myPayment,
-                  onSaved: (value) {
-                    setState(() {
-                      _myPayment = value;
-                    });
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _myPayment = value;
-                    });
-                  },
-                  dataSource: [
-                    {
-                      "display": "Pending",
-                      "value": "Pending",
-                    },
-                    {
-                      "display": "Paid",
-                      "value": "Paid",
-                    },
-                  ],
-                  textField: 'display',
-                  valueField: 'value',
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(8.0),
-                child: (_futureCustomer == null)
-                    ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text('Create Data'),
-                      onPressed: () {
-                        setState(() {
-                          _futureCustomer = updateCustomer(_myActivity, _myPayment);
-                        });
-                      },
-                    ),
-                  ],
-                )
-                    : FutureBuilder<Customer>(
-                  future: _futureCustomer,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      print(snapshot);
-                      return Text('TODO fix submit later');
-                    } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }
-
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TestPage extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<TestPage> {
-  String barcode = '';
-  Uint8List bytes = Uint8List(200);
-
-  Future<Customer> futureCustomer;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    if (barcode != null) {
-      futureCustomer = fetchCustomer(barcode);
-    }
-
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Labada Scan Order QR'),
-        ),
-        body: Center(
-
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: 200,
-                height: 20,
-                child: Image.memory(bytes),
-              ),
-              (futureCustomer == null)
-                  ? ''
-                  : FutureBuilder<Customer>(
-                future: futureCustomer,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListTile(
-                      title: Text(snapshot.data.name),
-                      subtitle: Text('Status: ' + snapshot.data.status),
-                      // When a user taps the ListTile, navigate to the DetailScreen.
-                      // Notice that you're not only creating a DetailScreen, you're
-                      // also passing the current customer through to it.
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CustomerScreenDropDown(),
-                            // Pass the arguments as part of the RouteSettings. The
-                            // DetailScreen reads the arguments from these settings.
-                            settings: RouteSettings(
-                              arguments: snapshot.data,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-
-                  return CircularProgressIndicator();
-                },
-              ),
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: Image.memory(bytes),
-              ),
-              RaisedButton(onPressed: _scan, child: Text("Scan QR")),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future _scan() async {
-    String barcode = await scanner.scan();
-    setState(() => this.barcode = barcode);
-  }
 }
