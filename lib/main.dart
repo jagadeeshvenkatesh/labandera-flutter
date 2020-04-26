@@ -8,6 +8,20 @@ import './models/order.dart';
 const String apiBase = 'https://api.labada.tigasoft.dev/api';
 final storage = FlutterSecureStorage();
 
+class LogoutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("Logout Page"),
+      ),
+      body: new Center(
+        child: new Text('You have been logged out'),
+      ),
+    );
+  }
+}
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -38,6 +52,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       home: LoginPage(title: appTitle),
+      routes: {
+        "/logout": (_) => new LogoutPage(),
+      },
     );
   }
 }

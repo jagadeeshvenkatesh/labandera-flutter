@@ -412,9 +412,18 @@ class OrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+      Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Orders'),
+      ),
+      floatingActionButton: new FloatingActionButton(
+        child: new Icon(Icons.power_settings_new),
+        onPressed: () {
+          // Navigator.pushReplacementNamed(context, "/logout");
+          Navigator.pushNamedAndRemoveUntil(context, "/logout", (_) => false);
+        },
       ),
       body: ListView.builder(
         itemCount: orders.length,
