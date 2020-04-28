@@ -18,12 +18,7 @@ class OrderList extends StatelessWidget {
         title: Text('Orders'),
       ),
       floatingActionButton: new FloatingActionButton(
-        // child: new Icon(Icons.access_time),//queued status
-        // child: new Icon(Icons.power_settings_new),//logout button power
-        // child: new Icon(Icons.local_laundry_service),//washing in progress button power
-        // child: new Icon(Icons.cancel),//cancelled
-        // child: new Icon(Icons.shopping_basket),//ready for pickup delivery
-        child: new Icon(Icons.check_circle),//order complete
+        child: new Icon(Icons.add), // Add new order
         onPressed: () {
           Navigator.pushNamedAndRemoveUntil(context, "/logout", (_) => false);
         },
@@ -31,12 +26,16 @@ class OrderList extends StatelessWidget {
       body: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {
-          return ListTile(
+          return Card(
+            color: Colors.white,
+            elevation: 2.0,
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: getColor(orders[index].status),
+                child:getIcon(orders[index].status),
+              ),
             title: Text(orders[index].name),
-            subtitle: Text('Status: ' + orders[index].status),
-            // When a user taps the ListTile, navigate to the DetailScreen.
-            // Notice that you're not only creating a DetailScreen, you're
-            // also passing the current order through to it.
+            subtitle: Text('Date Received: ' + orders[index].dateReceived),
             onTap: () {
               Navigator.push(
                 context,
@@ -50,9 +49,56 @@ class OrderList extends StatelessWidget {
                 ),
               );
             },
-          );
+            ),
+          );          
         },
       ),
     );
+  }
+
+  Color getColor(String status) {
+    switch (status) {
+      case 'Queued':
+        return Colors.amber;
+        break;
+      case 'Washing in progress':
+        return Colors.cyan;
+        break;
+      case 'Ready for Pickup/Delivery':
+        return Colors.blue;
+        break;
+      case 'Order Complete':
+        return Colors.green;
+        break;
+      case 'Cancelled':
+        return Colors.red;
+        break;
+      
+      default:
+        return Colors.green;
+    }
+  }
+  
+  Icon getIcon(String status) {
+    switch (status) {
+      case 'Queued':
+        return new Icon(Icons.access_time);
+        break;
+      case 'Washing in progress':
+        return new Icon(Icons.local_laundry_service);
+        break;
+      case 'Ready for Pickup/Delivery':
+        return new Icon(Icons.shopping_basket);
+        break;
+      case 'Order Complete':
+        return new Icon(Icons.check_circle_outline);
+        break;
+      case 'Cancelled':
+        return new Icon(Icons.cancel);
+        break;
+      
+      default:
+        return new Icon(Icons.local_laundry_service);
+    }
   }
 }
