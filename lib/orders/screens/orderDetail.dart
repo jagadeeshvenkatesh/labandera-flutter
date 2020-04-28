@@ -1,58 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:dropdown_formfield/dropdown_formfield.dart';
-import 'package:date_format/date_format.dart';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-const String apiBase = 'https://api.labada.tigasoft.dev/api';
-
-Future<List<Order>> fetchOrders(http.Client client, String token) async {
-  final response = await client.get(
-    '$apiBase/orders',
-    headers: {'x-access-token': token},
-  );
-
-  // Use the compute function to run parseOrders in a separate isolate.
-  return compute(parseOrders, response.body);
-}
-
-// A function that converts a response body into a List<Order>.
-List<Order> parseOrders(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Order>((json) => Order.fromJson(json)).toList();
-}
-
-class Order {
-  final int id;
-  final String name;
-  final String status;
-  final String price;
-  final String isPaid;
-  final String dateReceived;
-  final String dateReturned;
-  Order(
-      {this.id,
-      this.name,
-      this.status,
-      this.price,
-      this.isPaid,
-      this.dateReceived,
-      this.dateReturned});
-
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      status: json['status'] as String,
-      price: json['price'] as String,
-      isPaid: json['isPaid'] as String,
-      dateReceived: json['dateReceived'] as String,
-      dateReturned: json['dateReturned'] as String,
-    );
-  }
-}
+import '../controller.dart';
+import '../helper.dart';
+import '../model.dart';
 
 class OrderScreenDropDown extends StatefulWidget {
   @override
@@ -363,92 +314,6 @@ class _OrderScreenDropDownState extends State<OrderScreenDropDown> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-Future<Order> fetchOrder(String id) async {
-  final response = await http.get('$apiBase/order/$id');
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response, then parse the JSON.
-    return Order.fromJson(json.decode(response.body));
-  } else {
-    // If the server did not return a 200 OK response, then throw an exception.
-    throw Exception('Failed to load order');
-  }
-}
-
-Future<Order> updateOrder(String status, String isPaid) async {
-  final http.Response response = await http.post(
-    'https://jsonplaceholder.typicode.com/orders',
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'status': status,
-      'isPaid': isPaid,
-    }),
-  );
-  if (response.statusCode == 201) {
-    // If the server did return a 201 CREATED response, then parse the JSON.
-    return Order.fromJson(json.decode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response, then throw an exception.
-    throw Exception('Failed to load order');
-  }
-}
-
-String convertDateFromString(String strDate) {
-  DateTime todayDate = DateTime.parse(strDate);
-  return formatDate(todayDate, [MM, ' ', dd, ', ', yyyy]);
-}
-
-class OrderList extends StatelessWidget {
-  final List<Order> orders;
-
-  OrderList({Key key, this.orders}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return 
-      Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('Orders'),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.power_settings_new),
-        onPressed: () {
-          // Navigator.pushReplacementNamed(context, "/logout");
-          Navigator.pushNamedAndRemoveUntil(context, "/logout", (_) => false);
-        },
-      ),
-      body: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(orders[index].name),
-            subtitle: Text('Status: ' + orders[index].status),
-            // When a user taps the ListTile, navigate to the DetailScreen.
-            // Notice that you're not only creating a DetailScreen, you're
-            // also passing the current order through to it.
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OrderScreenDropDown(),
-                  // Pass the arguments as part of the RouteSettings. The
-                  // DetailScreen reads the arguments from these settings.
-                  settings: RouteSettings(
-                    arguments: orders[index],
-                  ),
-                ),
-              );
-            },
-          );
-        },
       ),
     );
   }

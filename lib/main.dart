@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import './utils/auth.dart';
 import './screens/loginPage.dart';
 import './screens/logoutPage.dart';
+import './utils/auth.dart';
 
 void main() => runApp(MyApp());
 
