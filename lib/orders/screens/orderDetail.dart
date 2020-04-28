@@ -1,6 +1,5 @@
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:moneytextformfield/moneytextformfield.dart';
 
 import '../controller.dart';
 import '../helper.dart';
@@ -103,6 +102,7 @@ class _OrderDetailState extends State<OrderDetail> {
           Column(
             children: <Widget>[
               TextField(
+                enabled: false,
                 controller: nameController,
                 style: textStyle,
                 onChanged: (value)=> order.name,
@@ -117,6 +117,7 @@ class _OrderDetailState extends State<OrderDetail> {
               Padding(
                 padding: EdgeInsets.only(top:15.0, bottom: 15.0),
                 child: TextField(
+                  enabled: false,
                   controller: priceController,
                   style: textStyle,
                   decoration: InputDecoration(
@@ -194,8 +195,4 @@ class _OrderDetailState extends State<OrderDetail> {
       )
     );
    }
-
-    String retrievePriority(int value) {
-      return _priorities[value-1];
-    }
 }
