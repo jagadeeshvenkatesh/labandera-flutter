@@ -18,7 +18,12 @@ class OrderList extends StatelessWidget {
         title: Text('Orders'),
       ),
       floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.power_settings_new),
+        // child: new Icon(Icons.access_time),//queued status
+        // child: new Icon(Icons.power_settings_new),//logout button power
+        // child: new Icon(Icons.local_laundry_service),//washing in progress button power
+        // child: new Icon(Icons.cancel),//cancelled
+        // child: new Icon(Icons.shopping_basket),//ready for pickup delivery
+        child: new Icon(Icons.check_circle),//order complete
         onPressed: () {
           Navigator.pushNamedAndRemoveUntil(context, "/logout", (_) => false);
         },
