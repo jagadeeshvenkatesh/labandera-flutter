@@ -44,10 +44,7 @@ class _OrderDetailState extends State<OrderDetail> {
     paymentController.text = order.isPaid;
     dateReceivedController.text = convertDateFromString(order.dateReceived);
     
-    if (order.dateReturned == '') {
-      dateReturnedController.text = 'Not yet returned';
-    }
-    else {
+    if (order.dateReturned != '') {
       dateReturnedController.text = convertDateFromString(order.dateReturned);
     }
 
@@ -118,6 +115,37 @@ class _OrderDetailState extends State<OrderDetail> {
                 padding: EdgeInsets.only(top:15.0, bottom: 15.0),
                 child: TextField(
                   enabled: false,
+                  controller: dateReceivedController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Date Received',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
+              ),
+              if (order.dateReturned != '')
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
+                  controller: dateReturnedController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Date Returned',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
                   controller: priceController,
                   style: textStyle,
                   decoration: InputDecoration(
@@ -152,36 +180,6 @@ class _OrderDetailState extends State<OrderDetail> {
                   style: textStyle,
                   decoration: InputDecoration(
                     labelText:  'Status',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
-                  ),
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: dateReceivedController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Date Received',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
-                  ),
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: dateReturnedController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Date Returned',
                     labelStyle: textStyle,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
