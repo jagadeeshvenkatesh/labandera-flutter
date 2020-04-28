@@ -6,11 +6,16 @@ import '../helper.dart';
 import '../model.dart';
 
 class OrderDetail extends StatefulWidget {
+  final Order order;
+  OrderDetail(this.order);
+
   @override
-  _OrderDetailState createState() => _OrderDetailState();
+  _OrderDetailState createState() => _OrderDetailState(order);
 }
 
 class _OrderDetailState extends State<OrderDetail> {
+  Order order;
+  _OrderDetailState(this.order);
   String _myActivity;
   String _myPayment;
   String _myActivityResult;
@@ -77,7 +82,7 @@ class _OrderDetailState extends State<OrderDetail> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(order.name),
+        title: Text('Order Details'),
         actions: <Widget>[
           // TODO Add menu later
           // PopupMenuButton<String>(
@@ -192,5 +197,5 @@ class _OrderDetailState extends State<OrderDetail> {
         ],)
       )
     );
-   }
+  }
 }

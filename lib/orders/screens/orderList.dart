@@ -41,7 +41,7 @@ class OrderList extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderDetail(),
+                  builder: (context) => OrderDetail(orders[index]),
                   // Pass the arguments as part of the RouteSettings. The
                   // DetailScreen reads the arguments from these settings.
                   settings: RouteSettings(
