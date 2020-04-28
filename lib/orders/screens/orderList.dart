@@ -89,7 +89,7 @@ class OrderList extends StatelessWidget {
         return new Icon(Icons.local_laundry_service);
         break;
       case 'Ready for Pickup/Delivery':
-        return new Icon(Icons.shopping_basket);
+        return new Icon(Icons.local_shipping);
         break;
       case 'Order Complete':
         return new Icon(Icons.check_circle_outline);
