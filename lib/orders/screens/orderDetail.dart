@@ -1,19 +1,26 @@
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:moneytextformfield/moneytextformfield.dart';
 
 import '../controller.dart';
 import '../helper.dart';
 import '../model.dart';
 
-class OrderScreenDropDown extends StatefulWidget {
+class OrderDetail extends StatefulWidget {
   @override
-  _OrderScreenDropDownState createState() => _OrderScreenDropDownState();
+  _OrderDetailState createState() => _OrderDetailState();
 }
 
-class _OrderScreenDropDownState extends State<OrderScreenDropDown> {
+class _OrderDetailState extends State<OrderDetail> {
   String _myActivity;
   String _myPayment;
   String _myActivityResult;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController statusController = TextEditingController();
+  TextEditingController paymentController = TextEditingController();
+  TextEditingController dateReceivedController = TextEditingController();
+  TextEditingController dateReturnedController = TextEditingController();
   final formKey = new GlobalKey<FormState>();
 
   Future<Order> _futureOrder;
@@ -31,6 +38,19 @@ class _OrderScreenDropDownState extends State<OrderScreenDropDown> {
   @override
   Widget build(BuildContext context) {
     final Order order = ModalRoute.of(context).settings.arguments;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
+    nameController.text = order.name;
+    priceController.text = '₱ ' + order.price;
+    statusController.text = order.status;
+    paymentController.text = order.isPaid;
+    dateReceivedController.text = convertDateFromString(order.dateReceived);
+    
+    if (order.dateReturned == '') {
+      dateReturnedController.text = 'Not yet returned';
+    }
+    else {
+      dateReturnedController.text = convertDateFromString(order.dateReturned);
+    }
 
     @override
     void initState() {
@@ -61,260 +81,121 @@ class _OrderScreenDropDownState extends State<OrderScreenDropDown> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Labada Info'),
+        title: Text(order.name),
+        actions: <Widget>[
+          // TODO Add menu later
+          // PopupMenuButton<String>(
+          //   onSelected: select,
+          //   itemBuilder: (BuildContext context) {
+          //     return choices.map((String choice){
+          //       return PopupMenuItem<String>(
+          //         value: choice,
+          //         child: Text(choice),
+          //       );
+          //     }).toList();
+          //   },
+          // ),
+        ],
       ),
-      body: Center(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+      body: Padding( 
+        padding: EdgeInsets.only(top:35.0, left: 10.0, right: 10.0),
+        child: ListView(children: <Widget>[
+          Column(
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              order.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Order',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              TextField(
+                controller: nameController,
+                style: textStyle,
+                onChanged: (value)=> order.name,
+                decoration: InputDecoration(
+                  labelText: 'Customer Name',
+                  labelStyle: textStyle,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  )
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              '123',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Weight/ Items',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(
-                            child: Text(
-                              order.price,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Price',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
+              Padding(
+                padding: EdgeInsets.only(top:15.0, bottom: 15.0),
+                child: TextField(
+                  controller: priceController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Price',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     )
-                  ],
-                ),
+                  ),
+                )
               ),
-              Container(
-                padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: Text(
-                              convertDateFromString(order.dateReceived),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Date laundry received from order',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
+                  controller: paymentController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Payment Status',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      /*1*/
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /*2*/
-                          Container(child: dateReturned),
-                          Text(
-                            'Date laundry returned to order',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
+                  controller: statusController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Status',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
               ),
-              Container(
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: DropDownFormField(
-                  titleText: 'Order status',
-                  hintText: order.status,
-                  value: _myActivity,
-                  onSaved: (value) {
-                    setState(() {
-                      _myActivity = value;
-                    });
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _myActivity = value;
-                    });
-                  },
-                  dataSource: [
-                    {
-                      "display": "Queued",
-                      "value": "Queued",
-                    },
-                    {
-                      "display": "Washing in progress",
-                      "value": "Washing in progress",
-                    },
-                    {
-                      "display": "Ready for Pickup/Delivery",
-                      "value": "Ready for Pickup/Delivery",
-                    },
-                    {
-                      "display": "Order Complete",
-                      "value": "Order Complete",
-                    },
-                    {
-                      "display": "Cancelled",
-                      "value": "Cancelled",
-                    },
-                  ],
-                  textField: 'display',
-                  valueField: 'value',
-                ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
+                  controller: dateReceivedController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Date Received',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
               ),
-              Container(
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: DropDownFormField(
-                  titleText: 'Payment status',
-                  hintText: order.isPaid,
-                  value: _myPayment,
-                  onSaved: (value) {
-                    setState(() {
-                      _myPayment = value;
-                    });
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _myPayment = value;
-                    });
-                  },
-                  dataSource: [
-                    {
-                      "display": "Pending",
-                      "value": "Pending",
-                    },
-                    {
-                      "display": "Paid",
-                      "value": "Paid",
-                    },
-                  ],
-                  textField: 'display',
-                  valueField: 'value',
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(8.0),
-                child: (_futureOrder == null)
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          RaisedButton(
-                            child: Text('Update Order'),
-                            onPressed: () {
-                              setState(() {
-                                _futureOrder =
-                                    updateOrder(_myActivity, _myPayment);
-                              });
-                            },
-                          ),
-                        ],
-                      )
-                    : FutureBuilder<Order>(
-                        future: _futureOrder,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            print(snapshot);
-                            return Text('TODO fix submit later');
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-
-                          return CircularProgressIndicator();
-                        },
-                      ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15.0),
+                child: TextField(
+                  enabled: false,
+                  controller: dateReturnedController,
+                  style: textStyle,
+                  decoration: InputDecoration(
+                    labelText:  'Date Returned',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                )
               ),
             ],
-          ),
-        ),
-      ),
+          )
+        ],)
+      )
     );
-  }
+   }
+
+    String retrievePriority(int value) {
+      return _priorities[value-1];
+    }
 }

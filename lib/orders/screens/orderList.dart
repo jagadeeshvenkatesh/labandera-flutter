@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../helper.dart';
 import '../model.dart';
 import './orderDetail.dart';
 
@@ -35,12 +36,12 @@ class OrderList extends StatelessWidget {
                 child:getIcon(orders[index].status),
               ),
             title: Text(orders[index].name),
-            subtitle: Text('Date Received: ' + orders[index].dateReceived),
+            subtitle: Text('Received: ' + convertDateFromString(orders[index].dateReceived)),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderScreenDropDown(),
+                  builder: (context) => OrderDetail(),
                   // Pass the arguments as part of the RouteSettings. The
                   // DetailScreen reads the arguments from these settings.
                   settings: RouteSettings(
