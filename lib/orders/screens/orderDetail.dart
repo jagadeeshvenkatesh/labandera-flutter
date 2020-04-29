@@ -43,6 +43,7 @@ class _OrderDetailState extends State<OrderDetail> {
   Widget build(BuildContext context) {
     final Order order = ModalRoute.of(context).settings.arguments;
     TextStyle textStyle = Theme.of(context).textTheme.title;
+    TextStyle buttonStyle = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
     nameController.text = order.name;
     priceController.text = '₱ ' + order.price;
     statusController.text = order.status;
@@ -100,101 +101,137 @@ class _OrderDetailState extends State<OrderDetail> {
       ),
       body: Padding( 
         padding: EdgeInsets.only(top:35.0, left: 10.0, right: 10.0),
-        child: ListView(children: <Widget>[
-          Column(
-            children: <Widget>[
-              TextField(
-                enabled: false,
-                controller: nameController,
-                style: textStyle,
-                onChanged: (value)=> order.name,
-                decoration: InputDecoration(
-                  labelText: 'Customer Name',
-                  labelStyle: textStyle,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
+        child: ListView(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                TextField(
+                  enabled: false,
+                  controller: nameController,
+                  style: textStyle,
+                  onChanged: (value)=> order.name,
+                  decoration: InputDecoration(
+                    labelText: 'Customer Name',
+                    labelStyle: textStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    )
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top:15.0, bottom: 15.0),
+                  child: TextField(
+                    enabled: false,
+                    controller: dateReceivedController,
+                    style: textStyle,
+                    decoration: InputDecoration(
+                      labelText:  'Date Received',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    ),
                   )
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top:15.0, bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: dateReceivedController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Date Received',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
+                if (order.dateReturned != '')
+                Padding(
+                  padding: EdgeInsets.only(bottom: 15.0),
+                  child: TextField(
+                    enabled: false,
+                    controller: dateReturnedController,
+                    style: textStyle,
+                    decoration: InputDecoration(
+                      labelText:  'Date Returned',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    ),
+                  )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 15.0),
+                  child: TextField(
+                    enabled: false,
+                    controller: priceController,
+                    style: textStyle,
+                    decoration: InputDecoration(
+                      labelText:  'Price',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    ),
+                  )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 15.0),
+                  child: TextField(
+                    enabled: false,
+                    controller: paymentController,
+                    style: textStyle,
+                    decoration: InputDecoration(
+                      labelText:  'Payment Status',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    ),
+                  )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 15.0),
+                  child: TextField(
+                    enabled: false,
+                    controller: statusController,
+                    style: textStyle,
+                    decoration: InputDecoration(
+                      labelText:  'Status',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    ),
+                  )
+                ),
+                if (order.isPaid == 'NA')
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.teal,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: () async {
+                          },
+                    child: Text('Mark as Paid',
+                      textAlign: TextAlign.center,
+                      style: buttonStyle.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold)
+                      ),
                   ),
-                )
-              ),
-              if (order.dateReturned != '')
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: dateReturnedController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Date Returned',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
+                ),
+                if (order.isPaid == 'Paid' && order.status != 'Order Complete')
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.teal,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: () async {
+                          },
+                    child: Text('Complete Order',
+                      textAlign: TextAlign.center,
+                      style: buttonStyle.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold)
+                      ),
                   ),
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: priceController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Price',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
-                  ),
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: paymentController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Payment Status',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
-                  ),
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 15.0),
-                child: TextField(
-                  enabled: false,
-                  controller: statusController,
-                  style: textStyle,
-                  decoration: InputDecoration(
-                    labelText:  'Status',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    )
-                  ),
-                )
-              ),
-            ],
-          )
-        ],)
+                ),
+              ],
+            )
+          ],
+        )
       )
     );
   }
