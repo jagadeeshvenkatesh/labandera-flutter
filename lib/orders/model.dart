@@ -1,5 +1,5 @@
 class Order {
-  final int id;
+  final String id;
   final String name;
   final String status;
   final String price;
@@ -7,17 +7,21 @@ class Order {
   final String dateReceived;
   final String dateReturned;
   Order(
-      {this.id,
+    {
+      this.id,
       this.name,
       this.status,
       this.price,
       this.isPaid,
       this.dateReceived,
-      this.dateReturned});
+      this.dateReturned
+    }
+  );
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    // print(json);
     return Order(
-      id: json['id'] as int,
+      id: json['_id'] as String,
       name: json['name'] as String,
       status: json['status'] as String,
       price: json['price'] as String,

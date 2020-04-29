@@ -28,7 +28,7 @@ List<Order> parseOrders(String responseBody) {
 /*
  * Get single order
  */
-Future<Order> fetchOrder(String id) async {
+Future<Order> fetchOrder(String id, token) async {
   final response = await http.get('$apiBase/order/$id');
 
   if (response.statusCode == 200) {
@@ -52,6 +52,30 @@ Future<Order> updateOrder(String status, String isPaid) async {
     body: jsonEncode(<String, String>{
       'status': status,
       'isPaid': isPaid,
+    }),
+  );
+  if (response.statusCode == 201) {
+    // If the server did return a 201 CREATED response, then parse the JSON.
+    return Order.fromJson(json.decode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response, then throw an exception.
+    throw Exception('Failed to load order');
+  }
+}
+
+/*
+ * Update order status
+ */
+Future<Order> updateOrderStatus(String id, String status, String token) async {
+  final http.Response response = await http.post(
+    '$apiBase/order',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'x-access-token': token
+    },
+    body: jsonEncode(<String, String>{
+      '_id': id,
+      'status': status,
     }),
   );
   if (response.statusCode == 201) {

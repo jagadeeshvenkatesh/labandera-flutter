@@ -1,3 +1,4 @@
+import 'package:Labandera/utils/auth.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,21 @@ class _OrderDetailState extends State<OrderDetail> {
   TextEditingController dateReturnedController = TextEditingController();
   final formKey = new GlobalKey<FormState>();
 
-  Future<Order> _futureOrder;
+  String token; 
+
+  Future<String> get jwtOrEmpty async {
+    var jwt = await storage.read(key: "jwt");
+    if(jwt == null) return "";
+    token = jwt;
+    setState(() => token = jwt);
+    return jwt;
+  }
+  
+  
+
+
+  Future<Order> _updatedOrder;
+
 
   _saveForm() {
     var form = formKey.currentState;
@@ -41,6 +56,7 @@ class _OrderDetailState extends State<OrderDetail> {
 
   @override
   Widget build(BuildContext context) {
+
     final Order order = ModalRoute.of(context).settings.arguments;
     TextStyle textStyle = Theme.of(context).textTheme.title;
     TextStyle buttonStyle = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
@@ -208,7 +224,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     minWidth: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                     onPressed: () async {
-                          },
+                    },
                     child: Text('Mark as Paid',
                       textAlign: TextAlign.center,
                       style: buttonStyle.copyWith(
@@ -227,7 +243,11 @@ class _OrderDetailState extends State<OrderDetail> {
                     minWidth: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                     onPressed: () async {
-                          },
+                      // updateOrderStatus
+                      print(order.status);
+                      print(order.id);
+                      print(token);
+                    },
                     child: Text('Washing in progress',
                       textAlign: TextAlign.center,
                       style: buttonStyle.copyWith(
