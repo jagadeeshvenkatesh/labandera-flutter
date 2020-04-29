@@ -194,7 +194,11 @@ class _OrderDetailState extends State<OrderDetail> {
                     ),
                   )
                 ),
-                if (order.isPaid == 'NA')
+                if (
+                  order.isPaid == 'NA' &&
+                  order.status != 'Order Complete' &&
+                  order.status != 'Cancelled'
+                )
                 Material(
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(30.0),
@@ -211,7 +215,11 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                   ),
                 ),
-                if (order.isPaid == 'Paid' && order.status != 'Order Complete')
+                if (
+                  order.isPaid == 'Paid' &&
+                  order.status != 'Order Complete' &&
+                  order.status != 'Cancelled'
+                )
                 Material(
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(30.0),
