@@ -197,6 +197,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 if (
                   order.isPaid == 'NA' &&
                   order.status != 'Order Complete' &&
+                  order.status != 'Washing in progress' &&
                   order.status != 'Cancelled'
                 )
                 Material(
@@ -216,9 +217,48 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
                 if (
+                  order.status == 'Queued'
+                )
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.teal,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: () async {
+                          },
+                    child: Text('Washing in progress',
+                      textAlign: TextAlign.center,
+                      style: buttonStyle.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold)
+                      ),
+                  ),
+                ),
+                if (
+                  order.status == 'Washing in progress'
+                )
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.teal,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: () async {
+                          },
+                    child: Text('Ready for Pickup/Delivery',
+                      textAlign: TextAlign.center,
+                      style: buttonStyle.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold)
+                      ),
+                  ),
+                ),
+                if (
                   order.isPaid == 'Paid' &&
                   order.status != 'Order Complete' &&
-                  order.status != 'Cancelled'
+                  order.status != 'Cancelled' &&
+                  order.status == 'Ready for Pickup/Delivery'
                 )
                 Material(
                   elevation: 5.0,
